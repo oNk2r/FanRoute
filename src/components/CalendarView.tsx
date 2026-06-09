@@ -115,27 +115,28 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto">
             {/* View Modes Selector */}
-            <div className="flex items-center gap-1 bg-[#0A0A0A] p-1 border border-[#222222] rounded-lg text-xs font-semibold font-sans overflow-x-auto w-full sm:w-auto">
+            <div className="grid grid-cols-3 gap-1 sm:flex sm:items-center sm:gap-1 bg-[#0A0A0A] p-1 border border-[#222222] rounded-lg text-xs font-semibold font-sans w-full sm:w-auto">
               <button
                 onClick={() => onViewModeChange("all")}
-                className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-md transition-all cursor-pointer whitespace-nowrap text-center ${
+                className={`px-1 py-1.5 sm:px-3 rounded-md transition-all cursor-pointer text-center ${
                   viewMode === "all"
                     ? "bg-[#22C55E] text-[#0A0A0A] font-bold shadow-md"
                     : "text-neutral-400 hover:text-white"
                 }`}
               >
-                All Matches
+                All <span className="hidden md:inline">Matches</span>
               </button>
               <button
                 onClick={() => onViewModeChange("favorites")}
-                className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
+                className={`px-1 py-1.5 sm:px-3 rounded-md transition-all cursor-pointer flex items-center justify-center gap-1 ${
                   viewMode === "favorites"
                     ? "bg-[#22C55E] text-[#0A0A0A] font-bold shadow-md"
                     : "text-neutral-400 hover:text-white"
                 }`}
               >
-                My Favorites
-                <span className={`px-1.5 py-0.2 text-[9px] rounded-full font-mono ${
+                <span className="hidden sm:inline">My Favorites</span>
+                <span className="inline sm:hidden">Favs</span>
+                <span className={`px-1 sm:px-1.5 py-0.2 text-[9px] rounded-full font-mono ${
                   viewMode === "favorites" ? "bg-black/20 text-[#0A0A0A]" : "bg-[#222222] text-neutral-400"
                 }`}>
                   {favoriteTeamIds.length}
@@ -143,14 +144,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               </button>
               <button
                 onClick={() => onViewModeChange("super")}
-                className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
+                className={`px-1 py-1.5 sm:px-3 rounded-md transition-all cursor-pointer flex items-center justify-center gap-1 ${
                   viewMode === "super"
                     ? "bg-[#22C55E] text-[#0A0A0A] font-bold shadow-md"
                     : "text-neutral-400 hover:text-white"
                 }`}
               >
-                Super Favorites
-                <span className={`px-1.5 py-0.2 text-[9px] rounded-full font-mono ${
+                <span className="hidden sm:inline">Super Favorites</span>
+                <span className="inline sm:hidden">Supers</span>
+                <span className={`px-1 sm:px-1.5 py-0.2 text-[9px] rounded-full font-mono ${
                   viewMode === "super" ? "bg-black/20 text-[#0A0A0A]" : "bg-[#222222] text-neutral-400"
                 }`}>
                   {superFavoriteTeamIds.length}
@@ -159,34 +161,34 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </div>
 
             {/* Month Swappers */}
-            <div className="flex items-center gap-1 bg-[#0A0A0A] p-1 border border-[#222222] rounded-lg w-full sm:w-auto">
+            <div className="grid grid-cols-2 gap-1 sm:flex sm:items-center sm:gap-1 bg-[#0A0A0A] p-1 border border-[#222222] rounded-lg w-full sm:w-auto">
               <button
                 onClick={() => {
                   setCurrentMonth("june");
                   setClickedDay("2026-06-11"); // Reset to June opening day
                 }}
-                className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-md text-xs font-semibold font-sans transition-all cursor-pointer whitespace-nowrap text-center ${
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold font-sans transition-all cursor-pointer text-center ${
                   currentMonth === "june"
                     ? "bg-[#22C55E] text-[#0A0A0A] shadow-lg font-bold"
                     : "text-neutral-400 hover:text-white"
                 }`}
                 id="june-picker-btn"
               >
-                June 2026
+                June <span className="hidden md:inline">2026</span>
               </button>
               <button
                 onClick={() => {
                   setCurrentMonth("july");
                   setClickedDay("2026-07-01"); // Reset to July start
                 }}
-                className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-md text-xs font-semibold font-sans transition-all cursor-pointer whitespace-nowrap text-center ${
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold font-sans transition-all cursor-pointer text-center ${
                   currentMonth === "july"
                     ? "bg-[#22C55E] text-[#0A0A0A] shadow-lg font-bold"
                     : "text-neutral-400 hover:text-white"
                 }`}
                 id="july-picker-btn"
               >
-                July 2026
+                July <span className="hidden md:inline">2026</span>
               </button>
             </div>
           </div>
@@ -276,9 +278,35 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   {dayNum}
                 </span>
 
-                {/* Flags container */}
+                {/* Flags container (Mobile - max 2 flags, smaller text) */}
                 {matchCount > 0 && (
-                  <div className="flex flex-wrap justify-center items-center gap-0.5 sm:gap-1 w-full my-auto">
+                  <div className="flex flex-wrap justify-center items-center gap-0.5 w-full my-auto sm:hidden">
+                    {uniqueFlags.slice(0, 2).map((flag, idx) => (
+                      <span
+                        key={idx}
+                        className="text-[10px] filter drop-shadow-sm select-none"
+                        title="Competing Team"
+                      >
+                        {flag}
+                      </span>
+                    ))}
+                    {uniqueFlags.length > 2 && (
+                      <span
+                        className={`text-[7px] font-mono font-bold leading-none px-0.5 py-0.2 rounded border ${
+                          isClicked
+                            ? "bg-black/10 border-black/25 text-black"
+                            : "bg-[#111111]/80 border-[#222222] text-neutral-400"
+                        }`}
+                      >
+                        +{uniqueFlags.length - 2}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Flags container (Desktop - max 4 flags) */}
+                {matchCount > 0 && (
+                  <div className="hidden sm:flex flex-wrap justify-center items-center gap-0.5 sm:gap-1 w-full my-auto">
                     {uniqueFlags.slice(0, 4).map((flag, idx) => (
                       <span
                         key={idx}

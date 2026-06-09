@@ -147,26 +147,26 @@ export default function App() {
     <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col font-sans selection:bg-[#22C55E] selection:text-black">
       
       {/* 1. Header Navigation Bar */}
-      <header className="border-b border-[#222222] bg-[#111111]/90 backdrop-blur-md sticky top-0 z-50 px-4 py-4 md:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <header className="border-b border-[#222222] bg-[#111111]/90 backdrop-blur-md sticky top-0 z-50 px-4 py-3 md:py-4 md:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
           
           {/* Logo Brand */}
           <div className="flex items-center gap-3">
-            <div className="bg-[#22C55E] p-2.5 rounded-xl shadow-lg shadow-[#22C55E]/10">
-              <Trophy className="w-6 h-6 text-black" />
+            <div className="bg-[#22C55E] p-2 md:p-2.5 rounded-xl shadow-lg shadow-[#22C55E]/10">
+              <Trophy className="w-5 h-5 md:w-6 md:h-6 text-black" />
             </div>
             <div>
-              <h1 className="text-xl md:text-2xl font-black italic tracking-tighter uppercase font-sans text-white">
+              <h1 className="text-lg md:text-2xl font-black italic tracking-tighter uppercase font-sans text-white">
                 Fan<span className="text-[#22C55E]">Route</span>
               </h1>
             </div>
           </div>
 
           {/* Timezone Switcher & Clock Widget details */}
-          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-4 w-full md:w-auto">
             
             {/* Clock */}
-            <div className="flex items-center gap-2 bg-[#0A0A0A] px-3.5 py-2 border border-[#222222] rounded-lg text-xs w-full sm:w-auto justify-between sm:justify-start">
+            <div className="flex items-center gap-2 bg-[#0A0A0A] px-3 py-1.5 sm:px-3.5 sm:py-2 border border-[#222222] rounded-lg text-xs w-full sm:w-auto justify-between sm:justify-start">
               <span className="flex items-center gap-1.5 text-neutral-400 font-medium font-sans">
                 <Clock className="w-3.5 h-3.5 text-[#22C55E] animate-pulse" />
                 Live Hub Time:
@@ -178,10 +178,10 @@ export default function App() {
 
             {/* Selector Dropdown custom-styled */}
             <div className="relative w-full sm:w-72">
-              <select
+               <select
                 value={selectedTimezone}
                 onChange={(e) => setSelectedTimezone(e.target.value)}
-                className="w-full bg-[#0A0A0A] text-neutral-200 border border-[#222222] focus:border-[#22C55E] focus:outline-none rounded-lg py-2 pl-3 pr-8 text-xs font-semibold cursor-pointer appearance-none transition-colors"
+                className="w-full bg-[#0A0A0A] text-neutral-200 border border-[#222222] focus:border-[#22C55E] focus:outline-none rounded-lg py-1.5 sm:py-2 pl-3 pr-8 text-xs font-semibold cursor-pointer appearance-none transition-colors"
                 id="timezone-select-dropdown"
               >
                 {TIMEZONES.map((tz) => (

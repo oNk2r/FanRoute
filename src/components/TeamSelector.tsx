@@ -83,7 +83,7 @@ export const TeamSelector: React.FC<TeamSelectorProps> = ({
   }, [searchQuery, selectedConfederation]);
 
   return (
-    <div className="bg-[#111111] border border-[#222222] rounded-xl p-4 shadow-xl lg:sticky lg:top-24" id="team-selector-card">
+    <div className="bg-transparent border-0 p-0 shadow-none lg:bg-[#111111] lg:border lg:border-[#222222] lg:rounded-xl lg:p-4 lg:shadow-xl lg:sticky lg:top-24" id="team-selector-card">
       <div className="mb-4">
         <h2 className="text-sm font-bold font-sans tracking-tight text-white flex items-center gap-2">
           <Trophy className="w-4 h-4 text-[#22C55E]" />

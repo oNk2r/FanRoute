@@ -53,8 +53,9 @@ export const MatchCard: React.FC<MatchCardProps> = ({
             {match.stage}
           </span>
           {isClashOfFavorites && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-gradient-to-r from-emerald-600 to-teal-500 text-white animate-pulse shadow-md shadow-emerald-950/40">
-              Clash of Favorites ⚔️
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-gradient-to-r from-emerald-600 to-teal-500 text-white animate-pulse shadow-md shadow-emerald-950/40 whitespace-nowrap">
+              <span className="hidden sm:inline">Clash of Favorites ⚔️</span>
+              <span className="inline sm:hidden">Clash ⚔️</span>
             </span>
           )}
         </div>
