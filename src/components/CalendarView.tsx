@@ -9,6 +9,8 @@ interface CalendarViewProps {
   selectedTimezone: string;
   favoriteTeamIds: string[];
   superFavoriteTeamIds: string[];
+  viewMode: "all" | "favorites" | "super";
+  onViewModeChange: (mode: "all" | "favorites" | "super") => void;
 }
 
 type MonthOption = "june" | "july";
@@ -18,6 +20,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   selectedTimezone,
   favoriteTeamIds,
   superFavoriteTeamIds,
+  viewMode,
+  onViewModeChange,
 }) => {
   const [currentMonth, setCurrentMonth] = useState<MonthOption>("june");
   
@@ -101,7 +105,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       
       {/* Calendar Card Wrap */}
       <div className="bg-[#111111] border border-[#222222] rounded-xl p-6 shadow-xl">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-[#22C55E] animate-pulse" />
             <h2 className="text-xl font-bold text-white font-sans tracking-tight">
@@ -109,36 +113,82 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </h2>
           </div>
 
-          {/* Month Swappers */}
-          <div className="flex items-center gap-2 bg-[#0A0A0A] p-1 border border-[#222222] rounded-lg">
-            <button
-              onClick={() => {
-                setCurrentMonth("june");
-                setClickedDay("2026-06-11"); // Reset to June opening day
-              }}
-              className={`px-4 py-1.5 rounded-md text-xs font-semibold font-sans transition-all cursor-pointer ${
-                currentMonth === "june"
-                  ? "bg-[#22C55E] text-[#0A0A0A] shadow-lg font-bold"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-              id="june-picker-btn"
-            >
-              June 2026
-            </button>
-            <button
-              onClick={() => {
-                setCurrentMonth("july");
-                setClickedDay("2026-07-01"); // Reset to July start
-              }}
-              className={`px-4 py-1.5 rounded-md text-xs font-semibold font-sans transition-all cursor-pointer ${
-                currentMonth === "july"
-                  ? "bg-[#22C55E] text-[#0A0A0A] shadow-lg font-bold"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-              id="july-picker-btn"
-            >
-              July 2026
-            </button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto">
+            {/* View Modes Selector */}
+            <div className="flex items-center gap-1 bg-[#0A0A0A] p-1 border border-[#222222] rounded-lg text-xs font-semibold font-sans overflow-x-auto w-full sm:w-auto">
+              <button
+                onClick={() => onViewModeChange("all")}
+                className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-md transition-all cursor-pointer whitespace-nowrap text-center ${
+                  viewMode === "all"
+                    ? "bg-[#22C55E] text-[#0A0A0A] font-bold shadow-md"
+                    : "text-neutral-400 hover:text-white"
+                }`}
+              >
+                All Matches
+              </button>
+              <button
+                onClick={() => onViewModeChange("favorites")}
+                className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
+                  viewMode === "favorites"
+                    ? "bg-[#22C55E] text-[#0A0A0A] font-bold shadow-md"
+                    : "text-neutral-400 hover:text-white"
+                }`}
+              >
+                My Favorites
+                <span className={`px-1.5 py-0.2 text-[9px] rounded-full font-mono ${
+                  viewMode === "favorites" ? "bg-black/20 text-[#0A0A0A]" : "bg-[#222222] text-neutral-400"
+                }`}>
+                  {favoriteTeamIds.length}
+                </span>
+              </button>
+              <button
+                onClick={() => onViewModeChange("super")}
+                className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
+                  viewMode === "super"
+                    ? "bg-[#22C55E] text-[#0A0A0A] font-bold shadow-md"
+                    : "text-neutral-400 hover:text-white"
+                }`}
+              >
+                Super Favorites
+                <span className={`px-1.5 py-0.2 text-[9px] rounded-full font-mono ${
+                  viewMode === "super" ? "bg-black/20 text-[#0A0A0A]" : "bg-[#222222] text-neutral-400"
+                }`}>
+                  {superFavoriteTeamIds.length}
+                </span>
+              </button>
+            </div>
+
+            {/* Month Swappers */}
+            <div className="flex items-center gap-1 bg-[#0A0A0A] p-1 border border-[#222222] rounded-lg w-full sm:w-auto">
+              <button
+                onClick={() => {
+                  setCurrentMonth("june");
+                  setClickedDay("2026-06-11"); // Reset to June opening day
+                }}
+                className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-md text-xs font-semibold font-sans transition-all cursor-pointer whitespace-nowrap text-center ${
+                  currentMonth === "june"
+                    ? "bg-[#22C55E] text-[#0A0A0A] shadow-lg font-bold"
+                    : "text-neutral-400 hover:text-white"
+                }`}
+                id="june-picker-btn"
+              >
+                June 2026
+              </button>
+              <button
+                onClick={() => {
+                  setCurrentMonth("july");
+                  setClickedDay("2026-07-01"); // Reset to July start
+                }}
+                className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-md text-xs font-semibold font-sans transition-all cursor-pointer whitespace-nowrap text-center ${
+                  currentMonth === "july"
+                    ? "bg-[#22C55E] text-[#0A0A0A] shadow-lg font-bold"
+                    : "text-neutral-400 hover:text-white"
+                }`}
+                id="july-picker-btn"
+              >
+                July 2026
+              </button>
+            </div>
           </div>
         </div>
 
@@ -192,12 +242,23 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               (monthVal === 6 && dayNum >= 11) || 
               (monthVal === 7 && dayNum <= 19);
 
+            // Extract unique team flags for this day
+            const uniqueFlags: string[] = [];
+            dayMatches.forEach((m) => {
+              if (m.teamA?.flag && !uniqueFlags.includes(m.teamA.flag)) {
+                uniqueFlags.push(m.teamA.flag);
+              }
+              if (m.teamB?.flag && !uniqueFlags.includes(m.teamB.flag)) {
+                uniqueFlags.push(m.teamB.flag);
+              }
+            });
+
             return (
               <button
                 key={dateStr}
                 onClick={() => setClickedDay(dateStr)}
                 disabled={!dayNum}
-                className={`relative flex flex-col items-center justify-between p-1 sm:p-2 md:p-3 rounded-lg border aspect-square transition-all duration-205 select-none cursor-pointer ${
+                className={`relative flex flex-col items-start justify-between p-1 sm:p-1.5 md:p-2 rounded-lg border aspect-square transition-all duration-205 select-none cursor-pointer w-full ${
                   isClicked
                     ? "bg-[#22C55E] border-[#22C55E] text-[#0A0A0A] font-bold ring-2 ring-[#22C55E]/30 shadow-md shadow-[#22C55E]/10 z-10"
                     : hasSuperFavorite
@@ -211,14 +272,40 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 id={`calendar-cell-${dateStr}`}
               >
                 {/* Day num */}
-                <span className={`text-[10px] sm:text-xs md:text-sm font-sans ${isClicked ? "text-neutral-950 font-extrabold" : "text-neutral-200"}`}>
+                <span className={`text-[10px] sm:text-xs md:text-sm font-sans ${isClicked ? "text-neutral-950 font-extrabold" : "text-neutral-200"} self-start`}>
                   {dayNum}
                 </span>
+
+                {/* Flags container */}
+                {matchCount > 0 && (
+                  <div className="flex flex-wrap justify-center items-center gap-0.5 sm:gap-1 w-full my-auto">
+                    {uniqueFlags.slice(0, 4).map((flag, idx) => (
+                      <span
+                        key={idx}
+                        className="text-xs sm:text-sm md:text-base filter drop-shadow-sm select-none transition-transform duration-200 hover:scale-125"
+                        title="Competing Team"
+                      >
+                        {flag}
+                      </span>
+                    ))}
+                    {uniqueFlags.length > 4 && (
+                      <span
+                        className={`text-[8px] sm:text-[9px] font-mono font-bold leading-none px-0.5 py-0.2 rounded border ${
+                          isClicked
+                            ? "bg-black/10 border-black/25 text-black"
+                            : "bg-[#111111]/80 border-[#222222] text-neutral-400"
+                        }`}
+                      >
+                        +{uniqueFlags.length - 4}
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {/* Mobile indicators / badges */}
                 {matchCount > 0 && (
                   <div
-                    className={`flex items-center justify-center text-[8px] sm:text-[9px] font-bold px-0.5 sm:px-1.5 py-0.2 rounded font-mono ${
+                    className={`absolute top-1 right-1 flex items-center justify-center text-[7px] sm:text-[9px] font-bold px-0.5 sm:px-1 py-0.2 rounded font-mono ${
                       isClicked
                         ? "bg-black/90 text-[#22C55E]"
                         : "bg-[#22C55E] text-black shadow"

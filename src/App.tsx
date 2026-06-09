@@ -48,6 +48,18 @@ export default function App() {
     return getBrowserTimezone();
   });
 
+  const [viewMode, setViewMode] = useState<"all" | "favorites" | "super">(( ) => {
+    try {
+      const saved = localStorage.getItem("fanroute_view_mode");
+      if (saved === "all" || saved === "favorites" || saved === "super") {
+        return saved;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return "favorites";
+  });
+
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
   // 3. Dynamic Local Time for Clock Display (Locks to World Cup 2026 context, ticking live)
@@ -73,6 +85,10 @@ export default function App() {
     localStorage.setItem("fanroute_timezone", selectedTimezone);
   }, [selectedTimezone]);
 
+  useEffect(() => {
+    localStorage.setItem("fanroute_view_mode", viewMode);
+  }, [viewMode]);
+
   const handleToggleSuperFavorite = (teamId: string) => {
     setSuperFavoriteTeamIds((prev) => {
       if (prev.includes(teamId)) {
@@ -86,9 +102,21 @@ export default function App() {
   };
 
   // 5. Match Filtration
-  // Returns match list involving the selected favorite teams only
-  // Note: Knockout matches containing TBD placeholder teams are always shown
+  // Returns match list based on viewMode and selections
   const filteredMatches = useMemo(() => {
+    if (viewMode === "all") {
+      return MATCHES;
+    }
+    if (viewMode === "super") {
+      if (superFavoriteTeamIds.length === 0) return [];
+      return MATCHES.filter(
+        (match) =>
+          superFavoriteTeamIds.includes(match.teamA.id) ||
+          superFavoriteTeamIds.includes(match.teamB.id)
+      );
+    }
+    
+    // "favorites" view mode
     if (favoriteTeamIds.length === 0) {
       return []; // Return empty list
     }
@@ -99,7 +127,7 @@ export default function App() {
         match.teamA.id.startsWith("tbd-") ||
         match.teamB.id.startsWith("tbd-")
     );
-  }, [favoriteTeamIds]);
+  }, [viewMode, favoriteTeamIds, superFavoriteTeamIds]);
 
   // 7. Format current clock text beautifully for the header
   const formattedCurrentClock = useMemo(() => {
@@ -183,6 +211,8 @@ export default function App() {
               selectedTimezone={selectedTimezone}
               favoriteTeamIds={favoriteTeamIds}
               superFavoriteTeamIds={superFavoriteTeamIds}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
             />
           </div>
 
