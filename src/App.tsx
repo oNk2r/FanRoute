@@ -63,7 +63,15 @@ export default function App() {
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
   // 3. Dynamic Local Time for Clock Display (Locks to World Cup 2026 context, ticking live)
-  const [currentDate, setCurrentDate] = useState<Date>(() => new Date("2026-06-07T19:55:09Z"));
+  const [currentDate, setCurrentDate] = useState<Date>(() => {
+    const now = new Date();
+    // If the system year is 2026, use the live system time.
+    // Otherwise, default to the tournament context start time (June 11, 2026).
+    if (now.getFullYear() === 2026) {
+      return now;
+    }
+    return new Date("2026-06-11T18:55:00Z");
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -213,6 +221,7 @@ export default function App() {
               superFavoriteTeamIds={superFavoriteTeamIds}
               viewMode={viewMode}
               onViewModeChange={setViewMode}
+              currentDate={currentDate}
             />
           </div>
 

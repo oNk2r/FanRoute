@@ -121,3 +121,29 @@ export function getBrowserTimezone(): string {
     return "America/New_York";
   }
 }
+
+/**
+ * Formats a Date object as a YYYY-MM-DD string under a specific timezone,
+ * ensuring robust formatting free from system or environment-specific quirks.
+ */
+export function getLocalDateKey(dateObj: Date, targetTimezone: string): string {
+  try {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: targetTimezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    const parts = formatter.formatToParts(dateObj);
+    const year = parts.find((p) => p.type === "year")?.value || "";
+    const month = parts.find((p) => p.type === "month")?.value || "";
+    const day = parts.find((p) => p.type === "day")?.value || "";
+    return `${year}-${month}-${day}`;
+  } catch (e) {
+    // Basic fallback parsing
+    const y = dateObj.getUTCFullYear();
+    const m = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
+    const d = String(dateObj.getUTCDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+}

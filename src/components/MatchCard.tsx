@@ -9,6 +9,7 @@ interface MatchCardProps {
   selectedTimezone: string;
   favoriteTeamIds: string[];
   superFavoriteTeamIds: string[];
+  currentTime: Date;
 }
 
 export const MatchCard: React.FC<MatchCardProps> = ({
@@ -16,17 +17,8 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   selectedTimezone,
   favoriteTeamIds,
   superFavoriteTeamIds = [],
+  currentTime,
 }) => {
-  // Use current local time from prompt reference, but tick dynamically
-  const [currentTime, setCurrentTime] = useState<Date>(() => new Date("2026-06-07T19:55:09Z"));
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime((prev) => new Date(prev.getTime() + 1000));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   const countdown: CountdownResult = getCountdown(match.date, match.timeUTC, currentTime);
   const { formattedDate, formattedTime, originalTimeStr, isDifferentDate } =
     getLocalDateAndTime(match.date, match.timeUTC, selectedTimezone);

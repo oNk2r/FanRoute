@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { Match } from "../types/match";
 import { MatchCard } from "./MatchCard";
-import { getLocalDateAndTime } from "../lib/timezone";
+import { getLocalDateAndTime, getLocalDateKey } from "../lib/timezone";
+import { getCountdown } from "../lib/countdown";
 import { Calendar, ChevronLeft, ChevronRight, Activity } from "lucide-react";
 
 interface CalendarViewProps {
@@ -11,6 +12,7 @@ interface CalendarViewProps {
   superFavoriteTeamIds: string[];
   viewMode: "all" | "favorites" | "super";
   onViewModeChange: (mode: "all" | "favorites" | "super") => void;
+  currentDate: Date;
 }
 
 type MonthOption = "june" | "july";
@@ -22,6 +24,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   superFavoriteTeamIds,
   viewMode,
   onViewModeChange,
+  currentDate,
 }) => {
   const [currentMonth, setCurrentMonth] = useState<MonthOption>("june");
   
@@ -67,11 +70,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       // e.g. "June 11, 2026" or "June 12, 2026"
       const { rawDate } = getLocalDateAndTime(match.date, match.timeUTC, selectedTimezone);
       
-      // Let's get the exact local date as YYYY-MM-DD relative to that timezone
-      const year = rawDate.toLocaleDateString("en-US", { timeZone: selectedTimezone, year: "numeric" });
-      const monthNum = rawDate.toLocaleDateString("en-US", { timeZone: selectedTimezone, month: "2-digit" });
-      const dayNum = rawDate.toLocaleDateString("en-US", { timeZone: selectedTimezone, day: "2-digit" });
-      const targetLocalDateKey = `${year}-${monthNum}-${dayNum}`;
+      // Use the robust utility function to construct targetLocalDateKey
+      const targetLocalDateKey = getLocalDateKey(rawDate, selectedTimezone);
 
       if (!lookup[targetLocalDateKey]) {
         lookup[targetLocalDateKey] = [];
@@ -238,6 +238,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               (m) => superFavoriteTeamIds.includes(m.teamA.id) || superFavoriteTeamIds.includes(m.teamB.id)
             );
 
+            // Check if this day has any live match right now
+            const hasLiveMatch = dayMatches.some((m) => {
+              const countdown = getCountdown(m.date, m.timeUTC, currentDate);
+              return countdown.status === "LIVE";
+            });
+
             // FIFA context check: June 11 - July 19, 2026 is the tournament active bracket
             const monthVal = currentMonth === "june" ? 6 : 7;
             const isActiveTournamentDay = 
@@ -263,6 +269,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 className={`relative flex flex-col items-start justify-between p-1 sm:p-1.5 md:p-2 rounded-lg border aspect-square transition-all duration-205 select-none cursor-pointer w-full ${
                   isClicked
                     ? "bg-[#22C55E] border-[#22C55E] text-[#0A0A0A] font-bold ring-2 ring-[#22C55E]/30 shadow-md shadow-[#22C55E]/10 z-10"
+                    : hasLiveMatch
+                    ? "bg-red-950/20 hover:bg-red-900/10 border-red-500/70 ring-2 ring-red-500/30 text-white animate-pulse"
                     : hasSuperFavorite
                     ? "bg-[#22C55E]/15 hover:bg-[#22C55E]/25 border-[#22C55E]/80 ring-2 ring-[#22C55E]/40 shadow-md shadow-[#22C55E]/25 text-white animate-pulse"
                     : matchCount > 0
@@ -274,9 +282,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 id={`calendar-cell-${dateStr}`}
               >
                 {/* Day num */}
-                <span className={`text-[10px] sm:text-xs md:text-sm font-sans ${isClicked ? "text-neutral-950 font-extrabold" : "text-neutral-200"} self-start`}>
-                  {dayNum}
-                </span>
+                <div className="flex items-center gap-1 self-start">
+                  <span className={`text-[10px] sm:text-xs md:text-sm font-sans ${isClicked ? "text-neutral-950 font-extrabold" : "text-neutral-200"}`}>
+                    {dayNum}
+                  </span>
+                  {hasLiveMatch && (
+                    <span className="flex h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse" title="Live match currently playing!" />
+                  )}
+                </div>
 
                 {/* Flags container (Mobile - max 2 flags, smaller text) */}
                 {matchCount > 0 && (
@@ -379,6 +392,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 selectedTimezone={selectedTimezone}
                 favoriteTeamIds={favoriteTeamIds}
                 superFavoriteTeamIds={superFavoriteTeamIds}
+                currentTime={currentDate}
               />
             ))}
           </div>
