@@ -1,5 +1,7 @@
 # ⚽ FanRoute: FIFA World Cup 2026 Interactive Hub
 
+![hero](image.png)
+
 **FanRoute** is an interactive web app to explore, track, and filter matches for the **FIFA World Cup 2026** (June 11 – July 19, 2026).
 
 ## 📅 Features
