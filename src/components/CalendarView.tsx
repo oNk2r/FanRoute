@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from "react";
-import { Match } from "../types/match";
+import { Match, Prediction } from "../types/match";
 import { MatchCard } from "./MatchCard";
 import { getLocalDateAndTime, getLocalDateKey } from "../lib/timezone";
 import { getCountdown } from "../lib/countdown";
-import { Calendar, ChevronLeft, ChevronRight, Activity } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Activity, Download } from "lucide-react";
 
 interface CalendarViewProps {
   matches: Match[];
@@ -13,6 +13,9 @@ interface CalendarViewProps {
   viewMode: "all" | "favorites" | "super";
   onViewModeChange: (mode: "all" | "favorites" | "super") => void;
   currentDate: Date;
+  predictions: Record<string, Prediction>;
+  onSavePrediction: (matchId: string, scoreA: number, scoreB: number, type: "predicted" | "simulated") => void;
+  onClearPrediction: (matchId: string) => void;
 }
 
 type MonthOption = "june" | "july";
@@ -25,12 +28,75 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   viewMode,
   onViewModeChange,
   currentDate,
+  predictions,
+  onSavePrediction,
+  onClearPrediction,
 }) => {
   const [currentMonth, setCurrentMonth] = useState<MonthOption>("june");
   
   // Track the currently selected calendar day for filtering details underneath (Format: "YYYY-MM-DD")
   // Default to June 11, 2026 (the opening match day of the World Cup!)
   const [clickedDay, setClickedDay] = useState<string>("2026-06-11");
+
+  const handleExportICS = () => {
+    if (matches.length === 0) {
+      alert("No matches found to export.");
+      return;
+    }
+
+    const formatICSDate = (date: Date) => {
+      return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    };
+
+    const icsContent = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//FanRoute//FIFA World Cup 2026 Hub//EN",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+    ];
+
+    matches.forEach((match) => {
+      const matchIsoStr = `${match.date}T${match.timeUTC}:00Z`;
+      const startDate = new Date(matchIsoStr);
+      const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours duration
+
+      const startStr = formatICSDate(startDate);
+      const endStr = formatICSDate(endDate);
+      const stampStr = formatICSDate(new Date());
+
+      const pred = predictions[match.id];
+      const predictionText = pred
+        ? `\\nPrediction: [${pred.scoreA} - ${pred.scoreB}] (${pred.type})`
+        : "";
+
+      const summary = `${match.teamA.flag} ${match.teamA.name} vs ${match.teamB.flag} ${match.teamB.name}`;
+      const description = `FIFA World Cup 2026 - ${match.stage}${match.group ? ` (${match.group})` : ""}\\nVenue: ${match.venue}, ${match.city}${predictionText}`;
+      const location = `${match.venue}, ${match.city}`;
+
+      icsContent.push(
+        "BEGIN:VEVENT",
+        `UID:match-${match.id}@fanroute.com`,
+        `DTSTAMP:${stampStr}`,
+        `DTSTART:${startStr}`,
+        `DTEND:${endStr}`,
+        `SUMMARY:${summary}`,
+        `DESCRIPTION:${description}`,
+        `LOCATION:${location}`,
+        "END:VEVENT"
+      );
+    });
+
+    icsContent.push("END:VCALENDAR");
+
+    const blob = new Blob([icsContent.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `fanroute_worldcup2026_${viewMode}_schedule.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const monthYearLabel = currentMonth === "june" ? "June 2026" : "July 2026";
 
@@ -191,6 +257,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 July <span className="hidden md:inline">2026</span>
               </button>
             </div>
+
+            {/* Export ICS Button */}
+            <button
+              onClick={handleExportICS}
+              className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md border border-[#22C55E]/30 bg-[#22C55E]/5 text-xs text-[#22C55E] hover:bg-[#22C55E]/15 font-semibold font-sans transition-all cursor-pointer text-center"
+              title="Download calendar schedule (.ics) for currently filtered matches"
+              id="export-ics-btn"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export ICS</span>
+            </button>
+
           </div>
         </div>
 
@@ -244,6 +322,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               return countdown.status === "LIVE";
             });
 
+            // Check if this day has any prediction set
+            const dayHasPrediction = dayMatches.some((m) => predictions[m.id]);
+
             // FIFA context check: June 11 - July 19, 2026 is the tournament active bracket
             const monthVal = currentMonth === "june" ? 6 : 7;
             const isActiveTournamentDay = 
@@ -288,6 +369,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   </span>
                   {hasLiveMatch && (
                     <span className="flex h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse" title="Live match currently playing!" />
+                  )}
+                  {dayHasPrediction && (
+                    <span 
+                      className={`h-1.5 w-1.5 rounded-full ${isClicked ? "bg-purple-950" : "bg-purple-500 animate-pulse"}`} 
+                      title="You have set a score/prediction for a match today!" 
+                    />
                   )}
                 </div>
 
@@ -393,6 +480,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 favoriteTeamIds={favoriteTeamIds}
                 superFavoriteTeamIds={superFavoriteTeamIds}
                 currentTime={currentDate}
+                prediction={predictions[match.id]}
+                onSavePrediction={onSavePrediction}
+                onClearPrediction={onClearPrediction}
               />
             ))}
           </div>

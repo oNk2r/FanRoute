@@ -24,3 +24,10 @@ export type TimezoneOption = {
   value: string; // Timezone name, e.g. "UTC", "America/New_York", "Europe/London", etc.
   offset: number; // Offset from UTC in hours
 };
+
+export interface Prediction {
+  scoreA: number;
+  scoreB: number;
+  type: "predicted" | "simulated";
+}
+
