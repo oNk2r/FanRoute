@@ -1093,8 +1093,8 @@ export const MATCHES: Match[] = [
   {
     id: "m097",
     stage: "Quarter-finals",
-    teamA: getTBDTeam("w-r16-97a", "TBD"),
-    teamB: getTBDTeam("w-r16-97b", "TBD"),
+    teamA: getTeam("france"),
+    teamB: getTeam("morocco"),
     date: "2026-07-09",
     timeUTC: "20:00",
     venue: "Gillette Stadium",
@@ -1105,8 +1105,8 @@ export const MATCHES: Match[] = [
   {
     id: "m098",
     stage: "Quarter-finals",
-    teamA: getTBDTeam("w-r16-98a", "TBD"),
-    teamB: getTBDTeam("w-r16-98b", "TBD"),
+    teamA: getTeam("spain"),
+    teamB: getTeam("belgium"),
     date: "2026-07-10",
     timeUTC: "19:00",
     venue: "SoFi Stadium",
@@ -1117,8 +1117,8 @@ export const MATCHES: Match[] = [
   {
     id: "m099",
     stage: "Quarter-finals",
-    teamA: getTBDTeam("w-r16-99a", "TBD"),
-    teamB: getTBDTeam("w-r16-99b", "TBD"),
+    teamA: getTeam("norway"),
+    teamB: getTeam("england"),
     date: "2026-07-11",
     timeUTC: "21:00",
     venue: "Hard Rock Stadium",
@@ -1127,8 +1127,8 @@ export const MATCHES: Match[] = [
   {
     id: "m100",
     stage: "Quarter-finals",
-    teamA: getTBDTeam("w-r16-100a", "TBD"),
-    teamB: getTBDTeam("w-r16-100b", "TBD"),
+    teamA: getTeam("argentina"),
+    teamB: getTeam("switzerland"),
     date: "2026-07-12",
     timeUTC: "01:00",
     venue: "Arrowhead Stadium",
