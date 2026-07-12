@@ -1142,8 +1142,8 @@ export const MATCHES: Match[] = [
   {
     id: "m101",
     stage: "Semi-finals",
-    teamA: getTBDTeam("wqf1", "Winner QF 1"),
-    teamB: getTBDTeam("wqf2", "Winner QF 2"),
+    teamA: getTeam("france"),
+    teamB: getTeam("spain"),
     date: "2026-07-14",
     timeUTC: "19:00",
     venue: "AT&T Stadium",
@@ -1152,8 +1152,8 @@ export const MATCHES: Match[] = [
   {
     id: "m102",
     stage: "Semi-finals",
-    teamA: getTBDTeam("wqf3", "Winner QF 3"),
-    teamB: getTBDTeam("wqf4", "Winner QF 4"),
+    teamA: getTeam("england"),
+    teamB: getTeam("argentina"),
     date: "2026-07-15",
     timeUTC: "19:00",
     venue: "Mercedes-Benz Stadium",

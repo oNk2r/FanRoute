@@ -25,9 +25,5 @@ export type TimezoneOption = {
   offset: number; // Offset from UTC in hours
 };
 
-export interface Prediction {
-  scoreA: number;
-  scoreB: number;
-  type: "predicted" | "simulated";
-}
+
 

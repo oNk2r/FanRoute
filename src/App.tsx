@@ -4,7 +4,6 @@ import { CalendarView } from "./components/CalendarView";
 import { MATCHES } from "./data/matches";
 import { TEAMS } from "./data/teams";
 import { TIMEZONES, getBrowserTimezone } from "./lib/timezone";
-import { Prediction } from "./types/match";
 import { 
   Trophy, 
   Clock 
@@ -61,17 +60,7 @@ export default function App() {
     return "favorites";
   });
 
-  const [predictions, setPredictions] = useState<Record<string, Prediction>>(() => {
-    try {
-      const saved = localStorage.getItem("fanroute_predictions");
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return {};
-  });
+
 
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
@@ -110,29 +99,7 @@ export default function App() {
     localStorage.setItem("fanroute_view_mode", viewMode);
   }, [viewMode]);
 
-  useEffect(() => {
-    localStorage.setItem("fanroute_predictions", JSON.stringify(predictions));
-  }, [predictions]);
 
-  const handleSavePrediction = (
-    matchId: string,
-    scoreA: number,
-    scoreB: number,
-    type: "predicted" | "simulated"
-  ) => {
-    setPredictions((prev) => ({
-      ...prev,
-      [matchId]: { scoreA, scoreB, type },
-    }));
-  };
-
-  const handleClearPrediction = (matchId: string) => {
-    setPredictions((prev) => {
-      const next = { ...prev };
-      delete next[matchId];
-      return next;
-    });
-  };
 
   const handleToggleSuperFavorite = (teamId: string) => {
     setSuperFavoriteTeamIds((prev) => {
@@ -259,9 +226,6 @@ export default function App() {
               viewMode={viewMode}
               onViewModeChange={setViewMode}
               currentDate={currentDate}
-              predictions={predictions}
-              onSavePrediction={handleSavePrediction}
-              onClearPrediction={handleClearPrediction}
             />
           </div>
 
